@@ -1,23 +1,39 @@
 import { useState, useEffect } from "react";
+import './App.css'
 
 import ButtonBar from "./components/ButtonBar";
 import Gallery from "./components/Gallery";
 
+const API_URL = 'https://collectionapi.metmuseum.org/public/collection/v1/objects/';
+const DEFAULT_ART_ID = 12720;
+
 function App() {
 
-  let [artId, setartId] = useState(12720)
+  let [artId, setArtId] = useState(DEFAULT_ART_ID)
   let [data, setData] = useState({})
 
+
   useEffect(() => {
-    document.title='Welcome to Artworld'
-    fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${artId}`)
-    .then(response => response.json())
-    .then(resData => setData(resData))
+    let getArtObject = async (artId) => {
+      let response = await fetch (`${API_URL}/${artId}`);
+      let resData = await response.json();
+      setData(resData);
+    }
+    getArtObject(artId);
   }, [artId]);
+  
 
   return (
     <div className="App">
-      <Gallery artId={data.artId} image={data.primaryImage} artist={data.artistDisplayName} title={data.title} />
+      <ButtonBar 
+        artId={artId}
+        setArtId={setArtId}
+      />
+      <Gallery 
+        primaryImage={data.primaryImage} 
+        artistDisplayName={data.artistDisplayName} 
+        title={data.title} 
+      />
     </div>
   );
 }
